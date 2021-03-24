@@ -1,0 +1,7 @@
+name = "NonSmoothProblems"
+uuid = "5655f2e6-550e-45fb-8023-520ea411539c"
+authors = ["Gilles Bareilles <gilles.bareilles@protonmail.com>"]
+version = "0.1.0"
+
+[deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
