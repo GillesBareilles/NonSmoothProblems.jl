@@ -3,6 +3,7 @@ module NonSmoothProblems
 using LinearAlgebra
 using Random
 using Distributions
+using DataStructures
 
 """
     NonSmoothPb
@@ -41,6 +42,15 @@ Nonsmooth problems which writes as min_x F(x) = f o Φ (x).
 abstract type CompositionCompoPb <: CompositePb end
 
 
+"""
+    AbstractManifold
+
+Manifolds embedded in ℝⁿ.
+"""
+abstract type AbstractManifold end
+include("manifold.jl")
+
+
 include("compositionpb/maxquad.jl")
 include("compositionpb/maxquad_instances.jl")
 
@@ -58,6 +68,7 @@ export MaxQuadPb
 export MaxQuad2d, MaxQuadBGLS
 
 export EigmaxLinear
+export EigmaxLinearManifold
 export get_eigmaxlinear_pb
 
 end # module
