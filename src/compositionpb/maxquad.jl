@@ -146,5 +146,6 @@ function point_manifold(pb::MaxQuadPb, x)
             push!(active_indices, i)
         end
     end
+    # some comment
     return MaxQuadManifold(pb, active_indices)
 end
