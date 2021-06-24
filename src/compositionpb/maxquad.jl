@@ -18,7 +18,10 @@ end
 #
 ### Shared methods
 #
-F(pb::MaxQuadPb, x) = maximum(g(pb, x))
+f(pb::MaxQuadPb, y) = maximum(y)
+
+F(pb::MaxQuadPb, x) = f(pb, g(pb, x))
+
 
 function ∂F_elt(pb::MaxQuadPb, x)
     gx = g(pb, x)
@@ -41,8 +44,6 @@ function is_differentiable(pb::MaxQuadPb, x)
     gx_max = maximum(gx)
     return length(filter(gᵢ -> gᵢ == gx_max, gx)) == 1
 end
-
-
 
 #
 ### Problem specific methods
@@ -84,6 +85,43 @@ struct MaxQuadManifold <: AbstractManifold
     active_fᵢ_indices::Vector{Int64}
     MaxQuadManifold(pb::MaxQuadPb, activeinds::AbstractArray) = new(pb, sort(activeinds))
 end
+Base.show(io::IO, M::MaxQuadManifold) = print(io, "MaxQuad(", M.active_fᵢ_indices, ")")
+
+
+function select_activestrata(M::MaxQuadManifold, x)
+    gx = g(M.pb, x)
+    iact = argmax(gx)
+    # @debug "F̃: smooth extension" gx iact
+    iact ∉ M.active_fᵢ_indices && @warn "F̃: active function not in manifold"
+    return iact
+end
+
+
+"""
+    F̃(M, x)
+
+Computes the value of a smooth extension of `F` on manifold `M` at point `x`.
+"""
+function F̃(M::MaxQuadManifold, x)
+	  return gᵢ(M.pb, x, select_activestrata(M, x))
+end
+
+function ∇F̃(M::MaxQuadManifold, x)
+    return ∇gᵢ(M.pb, x, select_activestrata(M, x))
+end
+
+function ∇²F̃(M::MaxQuadManifold, x, η)
+	  return ∇²gᵢ(M.pb, x, select_activestrata(M, x), η)
+end
+
+
+"""
+    manifold_codim
+
+Compute the codimension of manifold `M`, that is the dimension of the normal
+space of `M`.
+"""
+manifold_codim(M::MaxQuadManifold) = length(M.active_fᵢ_indices)-1
 
 """
     h(M::MaxQuadManifold, x)
@@ -91,13 +129,9 @@ end
 Mapping that defines `M::MaxQuadManifold` as `M = h^{-1}({0})`.
 """
 function h(M::MaxQuadManifold, x)
-    gᵢx = zeros(length(M.active_fᵢ_indices)-1)
-    gx_last = gᵢ(M.pb, x, last(M.active_fᵢ_indices))
-
-    for (i, ind) in enumerate(M.active_fᵢ_indices[1:end-1])
-        gᵢx[i] = gᵢ(M.pb, x, ind) - gx_last
-    end
-    return gᵢx
+    manifold_codim(M) == 0 && return Float64[]
+    res = [gᵢ(M.pb, x, i) for i in M.active_fᵢ_indices[1:end-1]] .- gᵢ(M.pb, x, last(M.active_fᵢ_indices))
+    return res
 end
 
 function Dh(M::MaxQuadManifold, x, η)
@@ -110,12 +144,11 @@ function Dh(M::MaxQuadManifold, x, η)
     return res
 end
 
-function Jac_h(pb::MaxQuadPb, M::MaxQuadManifold, x)
+function Jac_h(M::MaxQuadManifold, x)
     hx = h(M, x)
     hdim = length(hx)
-    ∇F = ∇gᵢ(pb, x, first(M.active_fᵢ_indices))
 
-    Jₕx = zeros(hdim, pb.n)
+    Jₕx = zeros(hdim, M.pb.n)
     for i in 1:hdim
         Jₕx[i, :] .= ∇hᵢ(M, x, i)
     end
@@ -124,7 +157,9 @@ end
 
 hᵢ(M::MaxQuadManifold, x, i) = gᵢ(M.pb, x, M.active_fᵢ_indices[i]) - gᵢ(M.pb, x, last(M.active_fᵢ_indices))
 ∇hᵢ(M::MaxQuadManifold, x, i) = ∇gᵢ(M.pb, x, M.active_fᵢ_indices[i]) - ∇gᵢ(M.pb, x, last(M.active_fᵢ_indices))
-∇²hᵢ(M::MaxQuadManifold, x, i, η) = ∇²gᵢ(M.pb, x, M.active_fᵢ_indices[i], η) - ∇²gᵢ(M.pb, x, last(M.active_fᵢ_indices), η)
+function ∇²hᵢ(M::MaxQuadManifold, x, i, η)
+    return ∇²gᵢ(M.pb, x, M.active_fᵢ_indices[i], η) - ∇²gᵢ(M.pb, x, last(M.active_fᵢ_indices), η)
+end
 
 
 """
@@ -146,6 +181,33 @@ function point_manifold(pb::MaxQuadPb, x)
             push!(active_indices, i)
         end
     end
-    # some comment
     return MaxQuadManifold(pb, active_indices)
+end
+
+
+raw"""
+    projection_∂ᴹF(pb, M, x, y)
+
+Compute the projection of vector `y` onto the smooth extension of $\partial F$ at point $x$, relative to manifold $M$.
+"""
+function projection_∂ᴹF(M::MaxQuadManifold, x, y)
+    model = Model(with_optimizer(OSQP.Optimizer; polish=true, verbose=false, max_iter=1e8, time_limit=2, eps_abs=1e-12, eps_rel=1e-12))
+
+    α = @variable(model, α[1:length(M.active_fᵢ_indices)])
+    gconvhull = sum(α[i] .* ∇gᵢ(M.pb, x, fᵢind) for (i, fᵢind) in enumerate(M.active_fᵢ_indices))
+    @objective(model, Min, dot(gconvhull, gconvhull))
+
+    @constraint(model, sum(α) == 1)
+    cstr_pos = @constraint(model, α .>= 0)
+
+    optimize!(model)
+
+    if termination_status(model) ∉ Set([MOI.OPTIMAL, MOI.SLOW_PROGRESS, MOI.LOCALLY_SOLVED])
+        @warn "∂F_minnormelt: subproblem was not solved to optimality" termination_status(model) primal_status(model) dual_status(model)
+    end
+
+    if norm(dual.(cstr_pos)) > 1e-10
+        @info dual.(cstr_pos)
+    end
+    return value.(gconvhull)
 end

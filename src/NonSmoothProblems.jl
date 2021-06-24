@@ -1,9 +1,21 @@
 module NonSmoothProblems
 
+import Base.show
+
 using LinearAlgebra
 using Random
 using Distributions
 using DataStructures
+using JuMP
+using OSQP
+using MosekTools
+
+using Zygote
+using FiniteDifferences
+
+using Manifolds
+
+using Debugger
 
 """
     NonSmoothPb
@@ -50,6 +62,12 @@ Manifolds embedded in ℝⁿ.
 abstract type AbstractManifold end
 include("manifold.jl")
 
+export project_tangent!, project_tangent, projection_∂ᴹF
+export normal_step
+
+
+
+include("eigen_derivatives.jl")
 
 include("compositionpb/maxquad.jl")
 include("compositionpb/maxquad_instances.jl")
