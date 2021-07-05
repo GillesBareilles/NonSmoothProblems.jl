@@ -76,18 +76,18 @@ normalcoords_to_tangentrep(Jₕx, λ, d) = d .- Jₕx' * λ
 
 
 """raw
-    grad_Hess(pb::CompositionCompoPb, M::AbstractManifold, x)
+    grad_Hess(M::AbstractManifold, x)
 
 Compute the Riemannian gradient and hessian of `F(pb, ⋅)` at point `x` relative
 to manifold `M`.
 """
-function grad_Hess( M::AbstractManifold, x)
+function grad_Hess(pb, M::Tm, x) where {Tm <: AbstractManifold}
     hx = h(M, x)
     hdim = length(hx)
-    ∇F = ∇F̃(M, x)
+    ∇F = ∇F̃(pb, M, x)
 
     if hdim == 0
-        return ∇F, (res, η) -> (res.=∇²F̃(M, x, η))
+        return ∇F, (res, η) -> (res .= ∇²F̃(pb, M, x, η))
     end
 
     Jₕx = Jac_h(M, x)
@@ -98,8 +98,11 @@ function grad_Hess( M::AbstractManifold, x)
 
 
     # defining the Hessian operator at x
-    function Hess_Fx!(res, ηtangent)
-        res .= ∇²F̃(M, x, ηtangent)
+    function Hess_Fx!(res, η)
+        ηtangent = η .- Jₕx' * Jₕxtpinv * η
+        @debug "input vector:" norm(Dh(M, x, ηtangent))
+
+        res .= ∇²F̃(pb, M, x, ηtangent)
 
         # mancurvatureFD = FiniteDifferences.jvp(central_fdm(10, 1), vec -> Jac_h(M, vec)' * λ, (x, ηtangent))
         for (i, λᵢ) in enumerate(λ)
@@ -112,6 +115,7 @@ function grad_Hess( M::AbstractManifold, x)
 
         # Projection on tangent space
         res .-= Jₕx' * Jₕxtpinv * res
+        @debug "output vector:" norm(Dh(M, x, res))
         return nothing
     end
 
@@ -133,15 +137,16 @@ Computes the projection of 0 on the (smooth extension of the) subdifferential
 of `F` at point `x` (relative to manifold `M`).
 """
 function ∂Fᴹ_minnormelt(pb, M, x)
-
     minnormelt = projection_∂ᴹF(pb, M, x, zeros(size(x)))
     gradF, _ = grad_Hess(pb, M, x)
 
-    minnormelt_tangent = similar(gradF)
-    project_tangent!(minnormelt_tangent, M, x, minnormelt)
+    Jₕx = Jac_h(M, x)
+    Jₕxtpinv = pinv(Jₕx')
 
-    if norm(minnormelt_tangent - gradF) > 1e-10
-        @warn "∂F_minnormelt: mismatch between tangent component of minnormelt and Riemannian gradient." norm(minnormelt_tangent - gradF)
+    minnormelt_tangent = minnormelt - Jₕx' * Jₕxtpinv * minnormelt
+
+    if norm(minnormelt_tangent - gradF) > 1e-13
+        @warn "∂F_minnormelt: mismatch between tangent component of minnormelt and Riemannian gradient." norm(minnormelt_tangent - gradF) M g(pb, x)
     end
 
     if norm(minnormelt_tangent - gradF) > 1e-5

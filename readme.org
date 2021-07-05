@@ -1,0 +1,12 @@
+
+* Implemented solvers
+
+* TODOs
+
+** Projection on set with identification
+
+*** Clean up memory allocations in the convexhull section of code.
+
+*** Make Gradient Sampling use the custom convex hull projection algorithm
+
+*** Look into projection and identification on the spectraplex

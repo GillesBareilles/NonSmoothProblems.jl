@@ -9,11 +9,16 @@ using DataStructures
 using JuMP
 using OSQP
 using MosekTools
+using COSMO
 
 using Zygote
 using FiniteDifferences
 
 using Manifolds
+using LineSearches
+
+using LinearOperators
+using Krylov
 
 using Debugger
 
@@ -69,6 +74,9 @@ export normal_step
 
 include("eigen_derivatives.jl")
 
+include("projection_convexhull.jl")
+include("projections.jl")
+
 include("compositionpb/maxquad.jl")
 include("compositionpb/maxquad_instances.jl")
 
@@ -83,7 +91,7 @@ export SimpleQuad, SmoothQuad, Simplel1
 export SmoothQuad1d, SmoothQuad2d_1, SmoothQuad2d_2
 
 export MaxQuadPb
-export MaxQuad2d, MaxQuadBGLS
+export MaxQuad2d, MaxQuadAL, MaxQuadBGLS
 
 export EigmaxLinear
 export EigmaxLinearManifold

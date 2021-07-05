@@ -44,11 +44,11 @@ const NSP = NonSmoothProblems
             M = NSP.MaxQuadManifold(pb, union(ind_actstrata, manifold_activefuncitons))
 
             # Riemannian objects
-            gradFx, HessFx! = NSP.grad_Hess(M, x)
+            gradFx, HessFx! = NSP.grad_Hess(pb, M, x)
 
             # lagrangian based objects
             Jₕx = NSP.Jac_h(M, x)
-            ∇F̃x = NSP.∇F̃(M, x)
+            ∇F̃x = NSP.∇F̃(pb, M, x)
             λ = NSP.get_normalspace_coordinates(Jₕx, ∇F̃x)
 
             @test gradFx ≈ project_tangent(M, x, ∇F̃x)

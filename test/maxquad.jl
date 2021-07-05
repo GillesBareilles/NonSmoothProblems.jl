@@ -36,3 +36,43 @@ using Zygote
         end
     end
 end
+
+@testset "Variable precision" begin
+	  @testset "Type $Tf" for Tf in [Float32, Float64, BigFloat]
+        pb = MaxQuadBGLS(Tf)
+        x = rand(Tf, pb.n)
+        d = rand(Tf, pb.n)
+
+        @test typeof(F(pb, x)) == Tf
+
+        @testset "g oracles" begin
+            @test typeof(NSP.gᵢ(pb, x, 1)) == Tf
+            @test typeof(NSP.∇gᵢ(pb, x, 1)) == Array{Tf, 1}
+            @test typeof(NSP.Dg(pb, x, d)) == Array{Tf, 1}
+            @test typeof(NSP.Dg(pb, x)) == Array{Tf, 2}
+            @test typeof(NSP.∇²gᵢ(pb, x, 1, d)) == Array{Tf, 1}
+        end
+
+        M = NSP.MaxQuadManifold(pb, [2, 3, 4, 5])
+        @test typeof(M).parameters[1] == Tf
+
+        @test typeof(NSP.F̃(pb, M, x)) == Tf
+        @test typeof(NSP.∇F̃(pb, M, x)) == Array{Tf, 1}
+        @test typeof(NSP.∇²F̃(pb, M, x, d)) == Array{Tf, 1}
+
+        @testset "h oracles" begin
+            @test typeof(NSP.h(M, x)) == Array{Tf, 1}
+            @test typeof(NSP.Dh(M, x, d)) == Array{Tf, 1}
+            @test typeof(NSP.Jac_h(M, x)) == Array{Tf, 2}
+
+            @test typeof(NSP.hᵢ(M, x, 1)) == Tf
+            @test typeof(NSP.∇hᵢ(M, x, 1)) == Array{Tf, 1}
+            @test typeof(NSP.∇²hᵢ(M, x, 1, d)) == Array{Tf, 1}
+        end
+
+
+
+
+
+    end
+end
