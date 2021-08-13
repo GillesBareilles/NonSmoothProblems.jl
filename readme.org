@@ -4,8 +4,8 @@ A collection of structured nonsmooth problems: instances, and usual function and
 
 * Problems
 
-- ´MaxQuad´: the maximum of a given set of quadratic functions;
-- ´EigMaxLinear´: the maximum eigenvalue of an affine combination of symmetric matrices.
+- ~MaxQuad~: the maximum of a given set of quadratic functions;
+- ~EigMaxLinear~: the maximum eigenvalue of an affine combination of symmetric matrices.
 
 * Oracles
 
@@ -23,19 +23,17 @@ F(pb, x)
 is_differentiable(pb, x)
 #+end_src
 
-#+RESULTS:
-
 ** Structure oracles
 *** Composition type problems
 
-For problems ´min F(x)´, with ´F = f o g´,
-- ´f : ℝᵖ → ℝ´ nonsmooth (possibly prox-friendly);
-- ´g : ℝⁿ → ℝᵖ´ smooth;
+For problems =min F(x)=, with =F = f o g=,
+- =f : ℝᵖ → ℝ= nonsmooth (possibly prox-friendly);
+- =g : ℝⁿ → ℝᵖ= smooth;
 we expose
-- the derivatives of ´g´,
-- the manifolds relative to which ´f´ is partly-smooth:
+- the derivatives of =g=,
+- the manifolds relative to which =f= is partly-smooth:
   - a type, holding the manifold information
-  - a map ´h : ℝᵖ → ℝᵏ´ defining manifold points as ´h(x) = 0´ and its derivatives.
+  - a map =h : ℝᵖ → ℝᵏ= defining manifold points as =h(x) = 0= and its derivatives.
 
 Here are some of the available oracles:
 #+begin_src julia
