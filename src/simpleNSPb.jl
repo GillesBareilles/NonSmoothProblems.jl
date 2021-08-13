@@ -57,4 +57,4 @@ struct Simplel1 <: NonSmoothPb end
 F(::Simplel1, x) = norm(x, 1)
 ∂F_elt(::Simplel1, x) = sign.(x)
 ∂F_minnormelt(::Simplel1, x) = sign.(x)
-is_differentiable(::Simplel1, x) = length(filter(xᵢ -> xᵢ == 0, x)) > 0
+is_differentiable(::Simplel1, x) = length(filter(xᵢ -> xᵢ == 0, x)) == 0

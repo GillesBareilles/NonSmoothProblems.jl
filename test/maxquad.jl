@@ -69,10 +69,5 @@ end
             @test typeof(NSP.∇hᵢ(M, x, 1)) == Array{Tf, 1}
             @test typeof(NSP.∇²hᵢ(M, x, 1, d)) == Array{Tf, 1}
         end
-
-
-
-
-
     end
 end

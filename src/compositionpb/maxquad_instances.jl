@@ -1,18 +1,28 @@
 function MaxQuad2d(Tf = Float64; ε=0.0)
-    return MaxQuadPb{Float64}(2, 2,
-    Vector{Matrix{Float64}}([Diagonal([1, 0]), Diagonal([2, 1])]),
-    Vector{Vector{Float64}}([[1 - ε, 0], [-ε, 0]]),
-    Vector{Float64}([0, 0])
+    return MaxQuadPb{Tf}(2, 2,
+    Vector{Matrix{Tf}}([Diagonal([1, 0]), Diagonal([2, 1])]),
+    Vector{Vector{Tf}}([[1 - ε, 0], [-ε, 0]]),
+    Vector{Tf}([0, 0])
     )
 end
 
 function MaxQuadAL(Tf = Float64)
     return MaxQuadPb{Tf}(2, 2,
-        Vector{Matrix{Float64}}([Diagonal([3, 1]), Diagonal([1, 1])]),
-        Vector{Vector{Float64}}([[0, -1], [1, 0]]),
-        Vector{Float64}([0, 0])
+        Vector{Matrix{Tf}}([Diagonal([3, 1]), Diagonal([1, 1])]),
+        Vector{Vector{Tf}}([[0, -1], [1, 0]]),
+        Vector{Tf}([0, 0])
     )
 end
+
+
+function MaxQuadMaratos(Tf = Float64; r=1.0)
+    return MaxQuadPb{Tf}(2, 2,
+        Vector{Matrix{Tf}}([Diagonal([r, r]), Diagonal([-r, -r])]),
+        Vector{Vector{Tf}}([[-1, 0], [-1, 0]]),
+        Vector{Tf}([-r, r])
+    )
+end
+
 
 """
     MaxQuadBGLS()

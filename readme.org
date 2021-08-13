@@ -1,12 +1,58 @@
+#+TITLE: NonSmoothProblems.jl
 
-* Implemented solvers
+A collection of structured nonsmooth problems: instances, and usual function and subgradient oracle.
+
+* Problems
+
+- ´MaxQuad´: the maximum of a given set of quadratic functions;
+- ´EigMaxLinear´: the maximum eigenvalue of an affine combination of symmetric matrices.
+
+* Oracles
+
+** Usual nonsmooth oracles
+
+#+begin_src julia
+using NonSmoothProblems
+
+pb = Simplel1() # l1 norm
+x = rand(10)
+
+F(pb, x)
+∂F_elt(pb, x)
+∂F_minnormelt(pb, x)
+is_differentiable(pb, x)
+#+end_src
+
+#+RESULTS:
+
+** Structure oracles
+*** Composition type problems
+
+For problems ´min F(x)´, with ´F = f o g´,
+- ´f : ℝᵖ → ℝ´ nonsmooth (possibly prox-friendly);
+- ´g : ℝⁿ → ℝᵖ´ smooth;
+we expose
+- the derivatives of ´g´,
+- the manifolds relative to which ´f´ is partly-smooth:
+  - a type, holding the manifold information
+  - a map ´h : ℝᵖ → ℝᵏ´ defining manifold points as ´h(x) = 0´ and its derivatives.
+
+Here are some of the available oracles:
+#+begin_src julia
+const NSP = NonSmoothProblems
+
+pb = MaxQuadBGLS()
+x = [-.1263, -.0344, -.0069, .0264, .0673, -.2784, .0742, .1385, .0840, .0386]
+
+NSP.g(pb, x)
+NSP.Dg(pb, x)
+
+M = NSP.MaxQuadManifold(pb, [2, 3, 4, 5])
+NSP.h(M, x)
+NSP.Jac_h(M, x)
+#+end_src
+
+Check out the code for all the available oracles.
 
 * TODOs
-
-** Projection on set with identification
-
-*** Clean up memory allocations in the convexhull section of code.
-
-*** Make Gradient Sampling use the custom convex hull projection algorithm
-
-*** Look into projection and identification on the spectraplex
+- write tests for eigmax oracles
