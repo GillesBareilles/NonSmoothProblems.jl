@@ -69,6 +69,7 @@ export SimpleQuad, SmoothQuad, Simplel1
 export SmoothQuad1d, SmoothQuad2d_1, SmoothQuad2d_2
 
 export MaxQuadPb
+export MaxQuadManifold
 export MaxQuad2d, MaxQuadAL, MaxQuadMaratos, MaxQuadBGLS
 
 export EigmaxLinear
