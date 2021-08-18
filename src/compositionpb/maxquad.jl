@@ -18,10 +18,7 @@ end
 #
 ### Shared methods
 #
-f(pb::MaxQuadPb, y) = maximum(y)
-
 F(pb::MaxQuadPb, x) = f(pb, g(pb, x))
-
 
 function ∂F_elt(pb::MaxQuadPb, x)
     gx = g(pb, x)
@@ -44,30 +41,6 @@ function is_differentiable(pb::MaxQuadPb, x)
     gx_max = maximum(gx)
     return length(filter(gᵢ -> gᵢ == gx_max, gx)) == 1
 end
-
-#
-### Problem specific methods
-#
-g(pb::MaxQuadPb, x) = [gᵢ(pb, x, i) for i in 1:pb.k]
-gᵢ(pb::MaxQuadPb, x, i) = dot(pb.As[i]*x, x) + dot(pb.bs[i], x) + pb.cs[i]
-∇gᵢ(pb::MaxQuadPb, x, i) = 2*pb.As[i]*x + pb.bs[i]
-function Dg(pb::MaxQuadPb{Tf}, x, η) where Tf
-    res = zeros(Tf, pb.k)
-    for i in 1:pb.k
-        res[i] = dot(∇gᵢ(pb, x, i), η)
-    end
-    return res
-end
-function Dg(pb::MaxQuadPb{Tf}, x) where Tf
-    res = zeros(Tf, pb.k, pb.n)
-    for i in 1:pb.k
-        res[i, :] = ∇gᵢ(pb, x, i)'
-    end
-    return res
-end
-
-∇²gᵢ(pb::MaxQuadPb, x, i, η) = 2*pb.As[i]*η
-
 
 
 
@@ -184,3 +157,29 @@ function point_manifold(pb::MaxQuadPb, x)
     return MaxQuadManifold(pb, active_indices)
 end
 
+
+################################################################################
+# Problem specific methods
+################################################################################
+f(pb::MaxQuadPb, y) = maximum(y)
+
+
+g(pb::MaxQuadPb, x) = [gᵢ(pb, x, i) for i in 1:pb.k]
+gᵢ(pb::MaxQuadPb, x, i) = dot(pb.As[i]*x, x) + dot(pb.bs[i], x) + pb.cs[i]
+∇gᵢ(pb::MaxQuadPb, x, i) = 2*pb.As[i]*x + pb.bs[i]
+function Dg(pb::MaxQuadPb{Tf}, x, η) where Tf
+    res = zeros(Tf, pb.k)
+    for i in 1:pb.k
+        res[i] = dot(∇gᵢ(pb, x, i), η)
+    end
+    return res
+end
+function Dg(pb::MaxQuadPb{Tf}, x) where Tf
+    res = zeros(Tf, pb.k, pb.n)
+    for i in 1:pb.k
+        res[i, :] = ∇gᵢ(pb, x, i)'
+    end
+    return res
+end
+
+∇²gᵢ(pb::MaxQuadPb, x, i, η) = 2*pb.As[i]*η

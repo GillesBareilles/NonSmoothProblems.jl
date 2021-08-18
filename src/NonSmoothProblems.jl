@@ -3,6 +3,7 @@ module NonSmoothProblems
 import Base.show
 
 using LinearAlgebra
+using SparseArrays
 using Random
 using Distributions
 using DataStructures
@@ -61,6 +62,8 @@ include("compositionpb/maxquad_instances.jl")
 include("compositionpb/eigmax_linear.jl")
 include("compositionpb/eigmax_linear_instances.jl")
 
+include("additivepb/logitl1.jl")
+include("additivepb/logitl1_instances.jl")
 
 export NonSmoothPb
 export F, ∂F_elt, ∂F_minnormelt, is_differentiable
@@ -68,12 +71,13 @@ export F, ∂F_elt, ∂F_minnormelt, is_differentiable
 export SimpleQuad, SmoothQuad, Simplel1
 export SmoothQuad1d, SmoothQuad2d_1, SmoothQuad2d_2
 
-export MaxQuadPb
-export MaxQuadManifold
+export MaxQuadPb, MaxQuadManifold
 export MaxQuad2d, MaxQuadAL, MaxQuadMaratos, MaxQuadBGLS
 
-export EigmaxLinear
-export EigmaxLinearManifold
+export EigmaxLinear, EigmaxLinearManifold
 export get_eigmaxlinear_pb
+
+export LogitL1, L1Manifold
+export get_logit_MLE
 
 end # module
