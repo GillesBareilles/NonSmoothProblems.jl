@@ -65,6 +65,23 @@ include("compositionpb/eigmax_linear_instances.jl")
 include("additivepb/logitl1.jl")
 include("additivepb/logitl1_instances.jl")
 
+
+"""
+    ∇²Lagrangian!(res, pb, M, x, λ::AbstractVector, d)
+
+Compute the hessian of the lagrangian of the problem of minimizing a smooth
+extension of the objective function of `pb` on manifold `M` constrained on
+that manifold.
+"""
+function ∇²Lagrangian!(res, pb, M, x, λ::AbstractVector, d)
+    res .= ∇²F̃(pb, M, x, d)
+
+    for i in axes(λ, 1)
+        res .-= λ[i] .* ∇²hᵢ(M, x, i, d)
+    end
+    return res
+end
+
 export NonSmoothPb
 export F, ∂F_elt, ∂F_minnormelt, is_differentiable
 

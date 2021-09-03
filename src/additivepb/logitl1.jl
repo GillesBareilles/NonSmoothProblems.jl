@@ -45,9 +45,9 @@ function is_differentiable(pb::LogitL1, x)
     throw(error("Not implemented."))
 end
 
-#
+################################################################################
 ### Corresponding manifold
-#
+################################################################################
 """
     L1Manifold
 
@@ -61,25 +61,11 @@ end
 L1Manifold(pb::LogitL1, nz_coords) = L1Manifold(pb, convert(BitArray, nz_coords))
 Base.show(io::IO, M::L1Manifold{Tf}) where {Tf} = print(io, "L1(", findall(!, M.nz_coords), ")")
 
+manifold_codim(M::L1Manifold) = sum(.!M.nz_coords)
+
 function select_activestrata(M::L1Manifold, x)
     throw(error("Not implemented."))
 end
-
-
-F̃(pb::LogitL1, ::L1Manifold, x) = F(pb, x)
-
-function ∇F̃(pb::LogitL1, ::L1Manifold, x)
-    res = ∇f(pb, x)
-    res .+= pb.λ₁ .* sign.(x)
-
-    return res
-end
-
-function ∇²F̃(pb::LogitL1, ::L1Manifold, x, h)
-    return ∇²f(pb, x, h)
-end
-
-manifold_codim(M::L1Manifold) = sum(.!M.nz_coords)
 
 function h(M::L1Manifold{Tf}, x) where {Tf}
     manifold_codim(M) == 0 && return Tf[]
@@ -101,6 +87,23 @@ end
 
 function point_manifold(pb::LogitL1, x)
     return L1Manifold(pb, map(t -> abs(t) > 1e-3, x))
+end
+
+
+################################################################################
+# Smooth extension on manifold
+################################################################################
+F̃(pb::LogitL1, ::L1Manifold, x) = F(pb, x)
+
+function ∇F̃(pb::LogitL1, ::L1Manifold, x)
+    res = ∇f(pb, x)
+    res .+= pb.λ₁ .* sign.(x)
+
+    return res
+end
+
+function ∇²F̃(pb::LogitL1, ::L1Manifold, x, h)
+    return ∇²f(pb, x, h)
 end
 
 ################################################################################
