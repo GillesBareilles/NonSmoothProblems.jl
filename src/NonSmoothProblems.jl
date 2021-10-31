@@ -1,14 +1,20 @@
 module NonSmoothProblems
 
+using TimerOutputs
+
 import Base.show
 
 using LinearAlgebra
+using GenericLinearAlgebra
+using GenericSchur
 using SparseArrays
 using Random
 using Distributions
 using DataStructures
+using Manifolds
 
 using FiniteDifferences
+using Infiltrator
 
 """
     NonSmoothPb
@@ -65,6 +71,7 @@ include("compositionpb/eigmax_linear_instances.jl")
 include("additivepb/logitl1.jl")
 include("additivepb/logitl1_instances.jl")
 
+include("halfhalf.jl")
 
 """
     ∇²Lagrangian!(res, pb, M, x, λ::AbstractVector, d)
@@ -73,7 +80,7 @@ Compute the hessian of the lagrangian of the problem of minimizing a smooth
 extension of the objective function of `pb` on manifold `M` constrained on
 that manifold.
 """
-function ∇²Lagrangian!(res, pb, M, x, λ::AbstractVector, d)
+function ∇²Lagrangian!(res, pb, M, x, λ, d)
     res .= ∇²F̃(pb, M, x, d)
 
     for i in axes(λ, 1)
@@ -81,6 +88,8 @@ function ∇²Lagrangian!(res, pb, M, x, λ::AbstractVector, d)
     end
     return res
 end
+
+
 
 export NonSmoothPb
 export F, ∂F_elt, ∂F_minnormelt, is_differentiable
@@ -96,5 +105,7 @@ export get_eigmaxlinear_pb
 
 export LogitL1, L1Manifold
 export get_logit_MLE
+
+export Halfhalf, HalfhalfManifold
 
 end # module
