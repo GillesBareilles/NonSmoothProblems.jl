@@ -20,7 +20,7 @@ end
 #
 F(pb::MaxQuadPb, x) = f(pb, g(pb, x))
 
-function ∂F_elt(pb::MaxQuadPb, x)
+function ∂F_elt(pb::MaxQuadPb{Tf}, x) where Tf
     gx = g(pb, x)
 
     active_indices = Set{Int64}()
@@ -28,7 +28,7 @@ function ∂F_elt(pb::MaxQuadPb, x)
         (gxᵢ == maximum(gx)) && push!(active_indices, i)
     end
 
-    subgradient = zeros(size(x))
+    subgradient = zeros(Tf, size(x))
     for i in active_indices
         subgradient .+= (1/length(active_indices)) .* ∇gᵢ(pb, x, i)
     end
@@ -44,9 +44,9 @@ end
 
 
 
-#
-### Corresponding manifold
-#
+################################################################################
+# Corresponding manifold
+################################################################################
 """
     MaxQuadManifold
 

@@ -6,6 +6,7 @@ A collection of structured nonsmooth problems: instances, and usual function and
 
 - ~MaxQuad~: the maximum of a given set of quadratic functions;
 - ~EigMaxLinear~: the maximum eigenvalue of an affine combination of symmetric matrices.
+- ~Halfhalf~: the euclidean norm of a subset of coordinates of the point plus a quadratic term.
 
 * Oracles
 

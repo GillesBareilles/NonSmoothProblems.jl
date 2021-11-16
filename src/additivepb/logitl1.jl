@@ -69,7 +69,7 @@ end
 
 function h(M::L1Manifold{Tf}, x) where {Tf}
     manifold_codim(M) == 0 && return Tf[]
-	return x[.!M.nz_coords]
+    return x[.!M.nz_coords]
 end
 
 function Jac_h(M::L1Manifold{Tf}, x) where Tf
