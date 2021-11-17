@@ -16,6 +16,9 @@ using Manifolds
 using FiniteDifferences
 using Infiltrator
 
+
+const NSP = NonSmoothProblems
+
 """
     NonSmoothPb
 
@@ -66,6 +69,7 @@ include("compositionpb/maxquad.jl")
 include("compositionpb/maxquad_instances.jl")
 
 include("compositionpb/eigmax_linear.jl")
+include("compositionpb/eigenderivatives.jl")
 include("compositionpb/eigmax_linear_instances.jl")
 
 include("additivepb/logitl1.jl")
@@ -90,6 +94,7 @@ function ∇²Lagrangian!(res, pb, M, x, λ, d)
 end
 
 
+export NSP
 
 export NonSmoothPb
 export F, ∂F_elt, ∂F_minnormelt, is_differentiable
