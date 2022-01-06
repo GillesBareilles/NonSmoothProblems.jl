@@ -4,6 +4,8 @@ using TimerOutputs
 
 import Base.show
 
+using DocStringExtensions
+
 using LinearAlgebra
 using GenericLinearAlgebra
 using GenericSchur
@@ -12,6 +14,9 @@ using Random
 using Distributions
 using DataStructures
 using Manifolds
+
+using EigenDerivatives
+import EigenDerivatives: g, Dg, Dgconj, h, Dh, Jac_h, L, ∇L, ∇²L
 
 using FiniteDifferences
 using Infiltrator
@@ -68,9 +73,12 @@ abstract type AbstractManifold end
 include("compositionpb/maxquad.jl")
 include("compositionpb/maxquad_instances.jl")
 
-include("compositionpb/eigmax_linear.jl")
-include("compositionpb/eigenderivatives.jl")
-include("compositionpb/eigmax_linear_instances.jl")
+# include("compositionpb/eigmax_linear.jl")
+# include("compositionpb/eigenderivatives.jl")
+# include("compositionpb/eigmax_linear_instances.jl")
+
+include("compositionpb/eigmax.jl")
+include("compositionpb/eigmax_instances.jl")
 
 include("additivepb/logitl1.jl")
 include("additivepb/logitl1_instances.jl")
@@ -78,7 +86,7 @@ include("additivepb/logitl1_instances.jl")
 include("halfhalf.jl")
 
 """
-    ∇²Lagrangian!(res, pb, M, x, λ::AbstractVector, d)
+    $(TYPEDSIGNATURES)
 
 Compute the hessian of the lagrangian of the problem of minimizing a smooth
 extension of the objective function of `pb` on manifold `M` constrained on
@@ -105,8 +113,11 @@ export SmoothQuad1d, SmoothQuad2d_1, SmoothQuad2d_2
 export MaxQuadPb, MaxQuadManifold
 export MaxQuad2d, MaxQuadAL, MaxQuadMaratos, MaxQuadBGLS
 
-export EigmaxLinear, EigmaxLinearManifold
-export get_eigmaxlinear_pb
+# export EigmaxLinear, EigmaxLinearManifold
+# export get_eigmaxlinear_pb
+
+export Eigmax, EigmaxManifold
+export get_eigmax_linear_pb
 
 export LogitL1, L1Manifold
 export get_logit_MLE
