@@ -1,3 +1,7 @@
+function Eigmax(A::AffineMap{Tf}) where Tf
+    return Eigmax{Tf, AffineMap{Tf}}(A.n, A)
+end
+
 """
     $(TYPEDSIGNATURES)
 
@@ -11,4 +15,8 @@ function get_eigmax_linear_pb(; m=15, n=2, seed = 1864, Tf=Float64)
     As = [Symmetric(As[i, :, :] + As[i, :, :]') for i in 1:n]
     A = AffineMap{Tf}(n, m, A₀, As)
     return Eigmax{Tf, AffineMap{Tf}}(n, A)
+end
+
+function get_eigmax_AL33(; Tf=Float64)
+    return Eigmax(get_AL33_affinemap(;Tf))
 end

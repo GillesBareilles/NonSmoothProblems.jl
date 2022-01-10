@@ -19,11 +19,15 @@ f(::Eigmax, y) = eigmax(y)
 
 F(pb::Eigmax, x) = f(pb, g(pb.A, x))
 
+g(pb::Eigmax, x) = g(pb.A, x)
+Dg(pb::Eigmax, x, d) = Dg(pb.A, x, d)
+Dgconj(pb::Eigmax, x, D) = Dgconj(pb.A, x, D)
+
 function ∂F_elt(pb::Eigmax{Tf}, x) where Tf
     A = pb.A
 
     U = eigvecs(g(A, x))
-    subgradient_λmax = Symmetric(U[:, 1] * U[:, 1]')
+    subgradient_λmax = Symmetric(U[:, end] * U[:, end]')
     subgradient_g = Dgconj(A, x, subgradient_λmax)
 
     return subgradient_g
@@ -104,8 +108,19 @@ end
 # Smooth extension on manifold
 ################################################################################
 
+"""
+    $TYPEDSIGNATURES
+
+The smooth extension of the max eigenvalue on `M` defined as the
+mean of the `M.eigmult.r` largest eigenvalues.
+"""
 function ∇F̃(::Eigmax{Tf}, M::EigmaxManifold{Tf}, x::Vector{Tf}) where Tf
-    return @timeit_debug "∇ϕᵢⱼ" ∇ϕᵢⱼ(M.eigmult, M.pb.A, x, 1, 1)
+    res = zeros(Tf, size(x))
+    for i in 1:M.eigmult.r
+        res .+= ∇ϕᵢⱼ(M.eigmult, M.pb.A, x, i, i)
+    end
+    res ./= M.eigmult.r
+    return res
 end
 
 function ∇²Lagrangian!(res::Vector{Tf}, pb::Eigmax{Tf}, M::EigmaxManifold{Tf}, x::Vector{Tf}, λ::Vector{Tf}, d::Vector{Tf}) where {Tf}
@@ -113,3 +128,23 @@ function ∇²Lagrangian!(res::Vector{Tf}, pb::Eigmax{Tf}, M::EigmaxManifold{Tf}
     return
 end
 
+
+"""
+    $TYPEDSIGNATURES
+
+Compute the lagrangian matrix corresponding assciated with the inplace method
+`∇²Lagrangian!`.
+
+Note: meant as a helper for developping methods, rather inefficient.
+"""
+function ∇²L(pb::Eigmax, M::EigmaxManifold{Tf}, x::Vector{Tf}, λ::Vector{Tf}) where Tf
+    n = pb.n
+    res = zeros(Tf, pb.n, pb.n)
+    d = similar(x)
+    for i in 1:n
+        d .= 0
+        d[i] = 1
+        ∇²Lagrangian!(res[:, i], pb, M, x, λ, d)
+    end
+    return res
+end

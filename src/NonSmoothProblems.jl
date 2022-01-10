@@ -104,6 +104,8 @@ end
 
 export NSP
 
+export g, Dg, Dgconj
+
 export NonSmoothPb
 export F, ∂F_elt, ∂F_minnormelt, is_differentiable
 
