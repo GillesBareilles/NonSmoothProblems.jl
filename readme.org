@@ -52,6 +52,20 @@ NSP.Jac_h(M, x)
 #+end_src
 
 Check out the code for all the available oracles.
+**** Maximum eigenvalue problem
+```julia
+get_eigmax_affine(; m=15, n=2, seed = 1864, Tf=Float64)
+get_eigmax_AL33(; Tf=Float64)
+get_eigmax_powercoord(; m=5, n=5, k=2, Tf=Float64)
+get_eigmax_nlmap(; m=5, n=5, Tf=Float64)
+```
+
+**** Maximum of smooth problems
+```julia
+MaxQuadBGLS(Tf = Float64)
+MaxQuad2d(Tf = Float64; ε=0.0)
+MaxQuadAL(Tf = Float64)
+```
 
 * TODOs
 - write tests for eigmax oracles

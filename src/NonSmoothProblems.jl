@@ -101,6 +101,26 @@ function ∇²Lagrangian!(res, pb, M, x, λ, d)
     return res
 end
 
+"""
+    $TYPEDSIGNATURES
+
+Compute the lagrangian matrix corresponding assciated with the inplace method
+`∇²Lagrangian!`.
+
+Note: meant as a helper for developping methods, rather inefficient.
+"""
+function ∇²L(pb, M, x::Vector{Tf}, λ::Vector{Tf}) where Tf
+    n = pb.n
+    res = zeros(Tf, pb.n, pb.n)
+    d = similar(x)
+    for i in 1:n
+        d .= 0
+        d[i] = 1
+        resᵢ = @view res[:, i]
+        ∇²Lagrangian!(resᵢ, pb, M, x, λ, d)
+    end
+    return res
+end
 
 export NSP
 
@@ -115,11 +135,9 @@ export SmoothQuad1d, SmoothQuad2d_1, SmoothQuad2d_2
 export MaxQuadPb, MaxQuadManifold
 export MaxQuad2d, MaxQuadAL, MaxQuadMaratos, MaxQuadBGLS
 
-# export EigmaxLinear, EigmaxLinearManifold
-# export get_eigmaxlinear_pb
-
 export Eigmax, EigmaxManifold
-export get_eigmax_linear_pb
+export get_eigmax_affine, get_eigmax_powercoord, get_eigmax_nlmap
+export get_eigmax_AL33
 
 export LogitL1, L1Manifold
 export get_logit_MLE

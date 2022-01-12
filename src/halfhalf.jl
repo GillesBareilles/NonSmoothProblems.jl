@@ -50,9 +50,6 @@ function h(M::HalfhalfManifold{Tf}, x) where Tf
     return M.isnormactive ? projectodd(x) : Tf[]
 end
 
-∇²hᵢ(::HalfhalfManifold{Tf}, x, i, η) where Tf = Tf(0.0)
-
-
 function Jac_h(M::HalfhalfManifold{Tf}, x) where Tf
     if !M.isnormactive
         return zeros(Tf, 0, 8)
@@ -64,6 +61,9 @@ function Jac_h(M::HalfhalfManifold{Tf}, x) where Tf
     end
     return Jₕx
 end
+
+∇²hᵢ(::HalfhalfManifold{Tf}, x, i, η) where Tf = Tf(0.0)
+
 
 function ∇F̃(pb::Halfhalf{Tf}, M::HalfhalfManifold{Tf}, x) where Tf
     res = similar(x)

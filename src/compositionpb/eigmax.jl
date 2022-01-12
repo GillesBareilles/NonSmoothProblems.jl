@@ -123,28 +123,7 @@ function ∇F̃(::Eigmax{Tf}, M::EigmaxManifold{Tf}, x::Vector{Tf}) where Tf
     return res
 end
 
-function ∇²Lagrangian!(res::Vector{Tf}, pb::Eigmax{Tf}, M::EigmaxManifold{Tf}, x::Vector{Tf}, λ::Vector{Tf}, d::Vector{Tf}) where {Tf}
+function ∇²Lagrangian!(res, pb::Eigmax{Tf}, M::EigmaxManifold{Tf}, x::Vector{Tf}, λ::Vector{Tf}, d::Vector{Tf}) where {Tf}
     res .= ∇²L(M.eigmult, M.pb.A, x, λ, d)
     return
-end
-
-
-"""
-    $TYPEDSIGNATURES
-
-Compute the lagrangian matrix corresponding assciated with the inplace method
-`∇²Lagrangian!`.
-
-Note: meant as a helper for developping methods, rather inefficient.
-"""
-function ∇²L(pb::Eigmax, M::EigmaxManifold{Tf}, x::Vector{Tf}, λ::Vector{Tf}) where Tf
-    n = pb.n
-    res = zeros(Tf, pb.n, pb.n)
-    d = similar(x)
-    for i in 1:n
-        d .= 0
-        d[i] = 1
-        ∇²Lagrangian!(res[:, i], pb, M, x, λ, d)
-    end
-    return res
 end
