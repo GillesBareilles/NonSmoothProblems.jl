@@ -58,6 +58,11 @@ end
 EigmaxManifold(pb::Eigmax{Tf}, r::Int64) where Tf = EigmaxManifold(pb, EigMult(1, r, zeros(Tf, pb.n), pb.A))
 Base.show(io::IO, M::EigmaxManifold) = print(io, "Eigmax(", M.eigmult.r, ")")
 
+function manifold_codim(M::EigmaxManifold)
+    r = M.eigmult.r
+    return r==1 ? 0 : r^2
+end
+
 """
     h(M::EigmaxManifold, x)
 
@@ -107,6 +112,14 @@ end
 ################################################################################
 # Smooth extension on manifold
 ################################################################################
+function F̃(::Eigmax{Tf}, M::EigmaxManifold{Tf}, x::Vector{Tf}) where Tf
+    res = Tf(0)
+    for i in 1:M.eigmult.r
+        res += ϕᵢⱼ(M.eigmult, M.pb.A, x, i, i)
+    end
+    res /= M.eigmult.r
+    return res
+end
 
 """
     $TYPEDSIGNATURES

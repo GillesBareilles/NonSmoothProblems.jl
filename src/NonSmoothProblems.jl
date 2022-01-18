@@ -125,6 +125,7 @@ end
 export NSP
 
 export g, Dg, Dgconj
+export manifold_codim
 
 export NonSmoothPb
 export F, ∂F_elt, ∂F_minnormelt, is_differentiable
@@ -138,6 +139,7 @@ export MaxQuad2d, MaxQuadAL, MaxQuadMaratos, MaxQuadBGLS
 export Eigmax, EigmaxManifold
 export get_eigmax_affine, get_eigmax_powercoord, get_eigmax_nlmap
 export get_eigmax_AL33
+export AffineMap, PowerCoordMap, NonLinearMap
 
 export LogitL1, L1Manifold
 export get_logit_MLE
