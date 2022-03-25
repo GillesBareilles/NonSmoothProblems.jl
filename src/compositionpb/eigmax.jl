@@ -77,7 +77,12 @@ function Dh(M::EigmaxManifold{Tf}, x::Vector{Tf}, d::Vector{Tf}) where Tf
 end
 
 function Jac_h(M::EigmaxManifold{Tf}, x::Vector{Tf}) where Tf
-    return Jac_h(M.eigmult, M.pb.A, x)
+    res = Jac_h(M.eigmult, M.pb.A, x)
+    rk = rank(res)
+    if rk <= min(size(res)...)
+        @warn "Jacobian is not full rank" rk size(res)
+    end
+    return res
 end
 
 

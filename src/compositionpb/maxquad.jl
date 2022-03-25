@@ -59,7 +59,7 @@ struct MaxQuadManifold{Tf} <: AbstractManifold
     MaxQuadManifold(pb::MaxQuadPb{Tf}, activeinds::AbstractArray) where Tf = new{Tf}(pb, sort(activeinds))
 end
 Base.show(io::IO, M::MaxQuadManifold{Tf}) where {Tf} = print(io, "MaxQuad(", M.active_fᵢ_indices, ")")
-
+==(M::MaxQuadManifold, N::MaxQuadManifold) = (M.pb == N.pb) && (M.active_fᵢ_indices == N.active_fᵢ_indices)
 
 function select_activestrata(M::MaxQuadManifold, x)
     gx = g(M.pb, x)
@@ -76,7 +76,7 @@ end
 Computes the value of a smooth extension of `F` on manifold `M` at point `x`.
 """
 function F̃(pb::MaxQuadPb, M::MaxQuadManifold, x)
-	  return gᵢ(pb, x, select_activestrata(M, x))
+    return gᵢ(pb, x, select_activestrata(M, x))
 end
 
 function ∇F̃(pb::MaxQuadPb, M::MaxQuadManifold, x)
@@ -84,7 +84,7 @@ function ∇F̃(pb::MaxQuadPb, M::MaxQuadManifold, x)
 end
 
 function ∇²F̃(pb::MaxQuadPb, M::MaxQuadManifold, x, η)
-	  return ∇²gᵢ(pb, x, select_activestrata(M, x), η)
+    return ∇²gᵢ(pb, x, select_activestrata(M, x), η)
 end
 
 

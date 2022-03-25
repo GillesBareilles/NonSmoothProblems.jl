@@ -2,7 +2,7 @@ module NonSmoothProblems
 
 using TimerOutputs
 
-import Base.show
+import Base: show, ==
 
 using DocStringExtensions
 
