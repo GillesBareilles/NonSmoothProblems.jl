@@ -183,3 +183,4 @@ function Dg(pb::MaxQuadPb{Tf}, x) where Tf
 end
 
 ∇²gᵢ(pb::MaxQuadPb, x, i, η) = 2*pb.As[i]*η
+∇²gᵢ(pb::MaxQuadPb, x, i) = 2*pb.As[i]
