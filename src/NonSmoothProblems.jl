@@ -16,6 +16,7 @@ using DataStructures
 using Manifolds
 
 using EigenDerivatives
+import EigenDerivatives: g
 # import EigenDerivatives: g, Dg, Dgconj, h, Dh, Jac_h, L, ∇L, ∇²L
 
 using FiniteDifferences

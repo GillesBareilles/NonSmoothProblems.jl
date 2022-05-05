@@ -17,24 +17,24 @@ end
 f(::Eigmax{BigFloat}, y) = maximum(eigvals(y))
 f(::Eigmax, y) = eigmax(y)
 
-F(pb::Eigmax, x) = f(pb, g(pb.A, x))
+F(pb::Eigmax, x) = f(pb, g(pb, x))
 
-g(pb::Eigmax, x) = g(pb.A, x)
+g(pb::Eigmax, x) = EigenDerivatives.g(pb.A, x)
 Dg(pb::Eigmax, x, d) = Dg(pb.A, x, d)
 Dgconj(pb::Eigmax, x, D) = Dgconj(pb.A, x, D)
 
 function ∂F_elt(pb::Eigmax{Tf}, x) where Tf
     A = pb.A
 
-    U = eigvecs(g(A, x))
+    U = eigvecs(EigenDerivatives.g(A, x))
     subgradient_λmax = Symmetric(U[:, end] * U[:, end]')
-    subgradient_g = Dgconj(A, x, subgradient_λmax)
+    subgradient_g = EigenDerivatives.Dgconj(A, x, subgradient_λmax)
 
     return subgradient_g
 end
 
 function is_differentiable(pb::Eigmax{Tf}, x) where Tf<:Real
-    gx_eigvals = eigvals(g(pb.A, x))
+    gx_eigvals = eigvals(EigenDerivatives.g(pb.A, x))
     gx_eigvalsmax = maximum(gx_eigvals)
     return length(filter(λᵢ-> gx_eigvalsmax - λᵢ < 1e2 * eps(Tf), gx_eigvals)) == 1
 end
@@ -60,7 +60,7 @@ Base.show(io::IO, M::EigmaxManifold) = print(io, "Eigmax(", M.eigmult.r, ")")
 
 function manifold_codim(M::EigmaxManifold)
     r = M.eigmult.r
-    return r==1 ? 0 : r^2
+    return EigenDerivatives.hsize(r)
 end
 
 """
@@ -96,7 +96,7 @@ Implementing the heuristic mentioned in
 Noll & Apkarian, 2005, second order methods, eq. (3).
 """
 function point_manifold(pb::Eigmax{Tf}, x::Vector{Tf}) where Tf
-    Λ = eigvals(g(pb.A, x))
+    Λ = eigvals(EigenDerivatives.g(pb.A, x))
     sort!(Λ, rev=true)
     r = 1
 
