@@ -34,7 +34,6 @@ abstract type NonSmoothPb end
 
 F(pb::NonSmoothPb, x) = throw(error("F(): Not implemented for problem type $(typeof(pb))."))
 ∂F_elt(pb::NonSmoothPb, x) = throw(error("∂F_elt(): Not implemented for problem type $(typeof(pb))."))
-∂F_minnormelt(pb::NonSmoothPb, x) = throw(error("∂F_minnormelt(): Not implemented for problem type $(typeof(pb))."))
 is_differentiable(pb::NonSmoothPb, x) = throw(error("is_differentiable(): Not implemented for problem type $(typeof(pb))."))
 
 include("simpleNSPb.jl")
@@ -129,7 +128,7 @@ export g, Dg, Dgconj
 export manifold_codim
 
 export NonSmoothPb
-export F, ∂F_elt, ∂F_minnormelt, is_differentiable
+export F, ∂F_elt, is_differentiable
 
 export SimpleQuad, SmoothQuad, Simplel1
 export SmoothQuad1d, SmoothQuad2d_1, SmoothQuad2d_2

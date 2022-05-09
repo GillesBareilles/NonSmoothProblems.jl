@@ -31,7 +31,6 @@ function ∂F_elt(pb::Halfhalf, x)
     end
 end
 
-# ∂F_minnormelt(pb::Halfhalf, x) =
 is_differentiable(::Halfhalf, x) = (norm(projectodd(x)) != 0)
 
 

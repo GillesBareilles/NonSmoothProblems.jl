@@ -20,7 +20,6 @@ x = rand(10)
 
 F(pb, x)
 ∂F_elt(pb, x)
-∂F_minnormelt(pb, x)
 is_differentiable(pb, x)
 #+end_src
 
