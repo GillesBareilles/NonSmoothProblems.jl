@@ -22,6 +22,10 @@ F(pb, x)
 ∂F_elt(pb, x)
 is_differentiable(pb, x)
 #+end_src
+Sometimes, computing these three information require common information, we thus expose as well
+#+begin_src julia
+firstorderoracle(pb, x)
+#+end_src
 
 ** Structure oracles
 *** Composition type problems

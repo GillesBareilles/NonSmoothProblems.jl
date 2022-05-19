@@ -42,6 +42,22 @@ function is_differentiable(pb::MaxQuadPb, x)
     return length(filter(gᵢ -> gᵢ == gx_max, gx)) == 1
 end
 
+function firstorderoracle(pb::MaxQuadPb{Tf}, x::Vector{Tf}) where Tf
+    gx = g(pb, x)
+
+    active_indices = Set{Int64}()
+    for (i, gxᵢ) in enumerate(gx)
+        (gxᵢ == maximum(gx)) && push!(active_indices, i)
+    end
+
+    subgradient = zeros(Tf, size(x))
+    for i in active_indices
+        subgradient .+= (1/length(active_indices)) .* ∇gᵢ(pb, x, i)
+    end
+
+    isdiff = length(active_indices) == 1
+    return gx[first(active_indices)], subgradient, isdiff
+end
 
 
 ################################################################################

@@ -36,6 +36,16 @@ F(pb::NonSmoothPb, x) = throw(error("F(): Not implemented for problem type $(typ
 ∂F_elt(pb::NonSmoothPb, x) = throw(error("∂F_elt(): Not implemented for problem type $(typeof(pb))."))
 is_differentiable(pb::NonSmoothPb, x) = throw(error("is_differentiable(): Not implemented for problem type $(typeof(pb))."))
 
+"""
+    $TYPEDSIGNATURES
+
+Compute function value, a subgradient and tells wether the function is
+differentiable at point `x`.
+"""
+function firstorderoracle(pb, x)
+    return F(pb, x), ∂F_elt(pb, x), is_differentiable(pb, x)
+end
+
 include("simpleNSPb.jl")
 
 
@@ -128,7 +138,7 @@ export g, Dg, Dgconj
 export manifold_codim
 
 export NonSmoothPb
-export F, ∂F_elt, is_differentiable
+export F, ∂F_elt, is_differentiable, firstorderoracle
 
 export SimpleQuad, SmoothQuad, Simplel1
 export SmoothQuad1d, SmoothQuad2d_1, SmoothQuad2d_2

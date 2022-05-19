@@ -36,7 +36,19 @@ end
 function is_differentiable(pb::Eigmax{Tf}, x) where Tf<:Real
     gx_eigvals = eigvals(EigenDerivatives.g(pb.A, x))
     gx_eigvalsmax = maximum(gx_eigvals)
-    return length(filter(λᵢ-> gx_eigvalsmax - λᵢ < 1e2 * eps(Tf), gx_eigvals)) == 1
+    return length(filter(λᵢ-> λᵢ == gx_eigvalsmax, gx_eigvals)) == 1
+end
+
+function firstorderoracle(pb::Eigmax{Tf}, x) where Tf
+    gx = g(pb.A, x)
+    λs, U = eigen(gx)
+
+    subgradient_λmax = Symmetric(U[:, end] * U[:, end]')
+    subgradient_g = EigenDerivatives.Dgconj(pb.A, x, subgradient_λmax)
+
+    λmax = λs[end]
+    isdiff = count(==(λmax), λs) == 1
+    return λmax, subgradient_g, isdiff
 end
 
 
