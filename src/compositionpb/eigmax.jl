@@ -81,7 +81,9 @@ end
 Mapping that defines `M::EigmaxManifold` as `M = h^{-1}({0})`.
 """
 function h(M::EigmaxManifold{Tf}, x::Vector{Tf}) where Tf
-    return h(M.eigmult, M.pb.A, x)
+    res = zeros(Tf, manifold_codim(M))
+    h!(res, M.eigmult, x, g(M.pb.A, x))
+    return res
 end
 
 function Dh(M::EigmaxManifold{Tf}, x::Vector{Tf}, d::Vector{Tf}) where Tf
