@@ -82,16 +82,18 @@ Mapping that defines `M::EigmaxManifold` as `M = h^{-1}({0})`.
 """
 function h(M::EigmaxManifold{Tf}, x::Vector{Tf}) where Tf
     res = zeros(Tf, manifold_codim(M))
-    h!(res, M.eigmult, x, g(M.pb.A, x))
+    EigenDerivatives.h!(res, M.eigmult, x, g(M.pb, x))
     return res
 end
 
 function Dh(M::EigmaxManifold{Tf}, x::Vector{Tf}, d::Vector{Tf}) where Tf
-    return Dh(M.eigmult, M.pb.A, x, d)
+    throw(error("not implemented"))
+    return EigenDerivatives.Dh(M.eigmult, M.pb.A, x, d)
 end
 
 function Jac_h(M::EigmaxManifold{Tf}, x::Vector{Tf}) where Tf
-    res = Jac_h(M.eigmult, M.pb.A, x)
+    throw(error("not implemented"))
+    res = EigenDerivatives.Jac_h(M.eigmult, M.pb.A, x)
     rk = rank(res)
     if rk <= min(size(res)...)
         @warn "Jacobian is not full rank" rk size(res)
