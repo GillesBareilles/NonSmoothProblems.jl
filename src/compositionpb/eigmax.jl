@@ -67,7 +67,7 @@ struct EigmaxManifold{Tf} <: AbstractManifold
     pb::Eigmax{Tf}
     eigmult::EigMult{Tf, Vector{Tf}}
 end
-EigmaxManifold(pb::Eigmax{Tf}, r::Int64) where Tf = EigmaxManifold(pb, EigMult(1, r, zeros(Tf, pb.n), pb.A))
+EigmaxManifold(pb::Eigmax{Tf}, r::Int64) where Tf = EigmaxManifold{Tf}(pb, EigMult(1, r, zeros(Tf, pb.n), pb.A))
 Base.show(io::IO, M::EigmaxManifold) = print(io, "Eigmax(", M.eigmult.r, ")")
 
 function manifold_codim(M::EigmaxManifold)
