@@ -112,6 +112,10 @@ space of `M`.
 """
 manifold_codim(M::MaxQuadManifold) = length(M.active_fᵢ_indices)-1
 
+function manifold_dim(M::MaxQuadManifold)
+    return M.pb.n - manifold_codim(M)
+end
+
 """
     h(M::MaxQuadManifold, x)
 

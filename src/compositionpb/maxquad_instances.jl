@@ -55,3 +55,40 @@ function MaxQuadBGLS(Tf = Float64)
 
     return MaxQuadPb{Tf}(n, k, As, bs, zeros(k))
 end
+
+"""
+    $TYPEDSIGNATURES
+
+
+"""
+function F3d_U(ν; Tf = Float64)
+    @assert ν in 0:3
+    β = Tf[
+        0.5 -2 0 0
+        0 10 0 0
+        -5 10 0 10
+        -5.5 10 11 20
+    ]
+
+    n = 3
+    k = 4
+
+    As = [zeros(Tf, n, n) for i in 1:k]
+    bs = [zeros(Tf, n) for i in 1:k]
+    cs = zeros(Tf, k)
+
+    As[1][1, 1] = 0.5
+    As[1][2, 2] = 0.5
+    As[1][3, 3] = 0.05
+    bs[1][2:3] .= -1
+
+    As[2][1, 1] = 1
+    bs[2][1] = -3
+
+    bs[3][2] = 1
+    bs[4][2] = 1
+
+    cs[:] .= -β[ν+1, :]
+
+    return MaxQuadPb{Tf}(n, k, As, bs, cs)
+end

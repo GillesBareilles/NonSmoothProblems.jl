@@ -74,6 +74,9 @@ function manifold_codim(M::EigmaxManifold)
     r = M.eigmult.r
     return EigenDerivatives.hsize(r)
 end
+function manifold_dim(M::EigmaxManifold)
+    return M.pb.n - manifold_codim(M)
+end
 
 """
     h(M::EigmaxManifold, x)

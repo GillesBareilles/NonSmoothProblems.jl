@@ -135,7 +135,7 @@ end
 export NSP
 
 export g, Dg, Dgconj
-export manifold_codim
+export manifold_dim, manifold_codim
 
 export NonSmoothPb
 export F, ∂F_elt, is_differentiable, firstorderoracle
