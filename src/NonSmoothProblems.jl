@@ -1,7 +1,5 @@
 module NonSmoothProblems
 
-using TimerOutputs
-
 import Base: show, ==
 
 using DocStringExtensions
@@ -13,15 +11,9 @@ using SparseArrays
 using Random
 using Distributions
 using DataStructures
-using Manifolds
 
 using EigenDerivatives
-import EigenDerivatives: g
-# import EigenDerivatives: g, Dg, Dgconj, h, Dh, Jac_h, L, ∇L, ∇²L
-
-using FiniteDifferences
-using Infiltrator
-
+import EigenDerivatives: g, Dgconj
 
 const NSP = NonSmoothProblems
 
@@ -63,6 +55,9 @@ Nonsmooth problems that write as min_x F(x) = f(x) + g(x), where f is a smooth f
 """
 abstract type AdditiveCompoPb <: CompositePb end
 
+
+export f, ∇f!, proxg!
+
 """
     CompositionCompoPb
 
@@ -90,8 +85,14 @@ include("compositionpb/maxquad_instances.jl")
 include("compositionpb/eigmax.jl")
 include("compositionpb/eigmax_instances.jl")
 
+include("additivepb/logitl1_manifold.jl")
 include("additivepb/logitl1.jl")
 include("additivepb/logitl1_instances.jl")
+
+include("additivepb/lasso.jl")
+include("additivepb/utils_MCP.jl")
+include("additivepb/leastsquaresMCP.jl")
+include("additivepb/leastsquaresMCP_instances.jl")
 
 include("halfhalf.jl")
 
@@ -151,8 +152,12 @@ export get_eigmax_affine, get_eigmax_powercoord, get_eigmax_nlmap
 export get_eigmax_AL33
 export AffineMap, PowerCoordMap, NonLinearMap
 
-export LogitL1, L1Manifold
+
+export FixedSparsityManifold
+export LogitL1
 export get_logit_MLE
+export Lasso
+export MCPLeastSquares
 
 export Halfhalf, HalfhalfManifold
 
