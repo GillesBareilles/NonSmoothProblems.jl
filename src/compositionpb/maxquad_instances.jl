@@ -56,18 +56,29 @@ function MaxQuadBGLS(Tf = Float64)
     return MaxQuadPb{Tf}(n, k, As, bs, zeros(k))
 end
 
-"""
+@doc raw"""
     $TYPEDSIGNATURES
 
+Return `pb`, `xopt`, and `Fopt`:
+- the nonsmooth (convex) function F3d-Uν depending of the parameter `ν` in 0..3,
+- its minimizer, and
+- its optimal value.
 
+The functions originate from p. 609 of
+> Mifflin, Sagastizábal (2005) A VU-algorithm for Convex Minimization, Mathematical Programming.
+
+*Note*: there are two typos in the paper which are corrected in this implem:
+- for $ν = 2$, $\beta_4^{\nu=2}$ is set to $20$, not $10$
+- the fourth function is $x_3 - \beta_4$, rather than $x_2 - \beta_4$.
+With these fixes, the optimal value and point given in table 1 of the paper are correct.
 """
 function F3d_U(ν; Tf = Float64)
     @assert ν in 0:3
     β = Tf[
-        0.5 -2 0 0
-        0 10 0 0
-        -5 10 0 10
-        -5.5 10 11 20
+        0.5 0  -5 -5.5
+        -2  10 10 10
+        0   0  0  11
+        0   0  20 20
     ]
 
     n = 3
@@ -86,9 +97,21 @@ function F3d_U(ν; Tf = Float64)
     bs[2][1] = -3
 
     bs[3][2] = 1
-    bs[4][2] = 1
+    bs[4][3] = 1
 
-    cs[:] .= -β[ν+1, :]
+    cs[:] .= -β[:, ν+1]
 
-    return MaxQuadPb{Tf}(n, k, As, bs, cs)
+    xopt = zeros(Tf, 4)
+    Fopt = Tf(0)
+    if ν == 0
+        xopt = Tf[1, 0, 0]
+    elseif ν == 1
+        xopt = Tf[0, 0, 0]
+    elseif ν == 2
+        xopt = Tf[0, 0, 10]
+    else # ν == 3
+        xopt = Tf[0, 1, 10]
+    end
+
+    return MaxQuadPb{Tf}(n, k, As, bs, cs), xopt, Fopt
 end

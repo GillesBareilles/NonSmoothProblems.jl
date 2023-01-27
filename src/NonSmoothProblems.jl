@@ -145,7 +145,7 @@ export SimpleQuad, SmoothQuad, Simplel1
 export SmoothQuad1d, SmoothQuad2d_1, SmoothQuad2d_2
 
 export MaxQuadPb, MaxQuadManifold
-export MaxQuad2d, MaxQuadAL, MaxQuadMaratos, MaxQuadBGLS
+export MaxQuad2d, MaxQuadAL, MaxQuadMaratos, MaxQuadBGLS, F3d_U
 
 export Eigmax, EigmaxManifold
 export get_eigmax_affine, get_eigmax_powercoord, get_eigmax_nlmap
