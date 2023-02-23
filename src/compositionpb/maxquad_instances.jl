@@ -65,7 +65,7 @@ Return `pb`, `xopt`, `Fopt`, and `Mopt`:
 - its optimal value, and
 - its minimizer structure manifold.
 
-The functions originate from p. 609 of
+The functions originate from p. 601 of
 > Mifflin, Sagastizábal (2005) A VU-algorithm for Convex Minimization, Mathematical Programming.
 
 *Note*: there are two typos in the paper which are corrected in this implem:
@@ -123,6 +123,43 @@ function F3d_U(ν; Tf = Float64)
     else # ν == 3
         xopt = Tf[0, 1, 10]
     end
+
+    return pb, xopt, Fopt, Mopt
+end
+
+@doc raw"""
+    $TYPEDSIGNATURES
+
+Return `pb`, `xopt`, `Fopt`, and `Mopt`:
+- the nonsmooth (convex) function F3d-Uν depending of the parameter `ν` in 0..3,
+- its minimizer,
+- its optimal value, and
+- its minimizer structure manifold.
+
+# Reference:
+> p.601, Mifflin, Sagastizábal (2005) A VU-algorithm for Convex Minimization,
+ Mathematical Programming.
+"""
+function F2d(; Tf = Float64)
+    n = 2
+    k = 2
+
+    As = [zeros(Tf, n, n) for i in 1:k]
+    bs = [zeros(Tf, n) for i in 1:k]
+    cs = zeros(Tf, k)
+
+    #  0.5*(x(1)**2 + x(2)**2) - x(2)
+    As[1][1, 1] = 0.5
+    As[1][2, 2] = 0.5
+    bs[1][2] = -1
+
+    # x(2)
+    bs[2][2] = 1
+
+    xopt = zeros(Tf, 2)
+    Fopt = Tf(0)
+    pb = MaxQuadPb{Tf}(n, k, As, bs, cs)
+    Mopt = MaxQuadManifold(pb, [1, 2])
 
     return pb, xopt, Fopt, Mopt
 end
