@@ -59,10 +59,11 @@ end
 @doc raw"""
     $TYPEDSIGNATURES
 
-Return `pb`, `xopt`, and `Fopt`:
+Return `pb`, `xopt`, `Fopt`, and `Mopt`:
 - the nonsmooth (convex) function F3d-Uν depending of the parameter `ν` in 0..3,
-- its minimizer, and
-- its optimal value.
+- its minimizer,
+- its optimal value, and
+- its minimizer structure manifold.
 
 The functions originate from p. 609 of
 > Mifflin, Sagastizábal (2005) A VU-algorithm for Convex Minimization, Mathematical Programming.
@@ -88,30 +89,40 @@ function F3d_U(ν; Tf = Float64)
     bs = [zeros(Tf, n) for i in 1:k]
     cs = zeros(Tf, k)
 
+    #  0.5*(x(1)**2 + x(2)**2 + 0.1*x(3)**2)-x(2)-x(3)
     As[1][1, 1] = 0.5
     As[1][2, 2] = 0.5
     As[1][3, 3] = 0.05
     bs[1][2:3] .= -1
 
+    # x(1)**2 - 3x(1)
     As[2][1, 1] = 1
     bs[2][1] = -3
 
+    # x(2)
     bs[3][2] = 1
+
+    # x(3)
     bs[4][3] = 1
 
     cs[:] .= -β[:, ν+1]
 
     xopt = zeros(Tf, 4)
     Fopt = Tf(0)
+    pb = MaxQuadPb{Tf}(n, k, As, bs, cs)
+    Mopt = MaxQuadManifold(pb, [1])
     if ν == 0
         xopt = Tf[1, 0, 0]
+        Mopt = MaxQuadManifold(pb, [1, 2, 3, 4])
     elseif ν == 1
         xopt = Tf[0, 0, 0]
+        Mopt = MaxQuadManifold(pb, [1, 3, 4])
     elseif ν == 2
         xopt = Tf[0, 0, 10]
+        Mopt = MaxQuadManifold(pb, [1, 3])
     else # ν == 3
         xopt = Tf[0, 1, 10]
     end
 
-    return MaxQuadPb{Tf}(n, k, As, bs, cs), xopt, Fopt
+    return pb, xopt, Fopt, Mopt
 end
