@@ -56,6 +56,36 @@ function MaxQuadBGLS(Tf = Float64)
     return MaxQuadPb{Tf}(n, k, As, bs, zeros(k))
 end
 
+function MaxQuadAlt(; Tf = Float64)
+    n = 10
+    k = 5
+    As = [zeros(Tf, n, n) for i in 1:k]
+    bs = [zeros(Tf, n) for i in 1:k]
+
+    for k in 1:5
+        for i in 1:10, j in i:10
+            aij = exp(i/j)*cos(i*j)*sin(k)
+            As[k][i,j] = aij
+            As[k][j,i] = aij
+        end
+        for i in 1:10
+            bs[k][i] = exp(i/k)*sin(i*k)
+            As[k][i,i] = abs(sin(k))*i/n
+        end
+        for i in 1:10, j in 1:10
+            if j != i
+               As[k][i,i] = As[k][i,i] + abs(As[k][i,j])
+            end
+        end
+    end
+
+    for k = 1:5
+        bs[k] .*= -1
+    end
+
+    return MaxQuadPb{Tf}(n, k, As, bs, zeros(k))
+end
+
 @doc raw"""
     $TYPEDSIGNATURES
 
