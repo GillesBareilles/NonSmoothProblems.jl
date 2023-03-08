@@ -38,6 +38,17 @@ function firstorderoracle(pb, x)
     return F(pb, x), ∂F_elt(pb, x), is_differentiable(pb, x)
 end
 
+"""
+    $TYPEDSIGNATURES
+
+Compute function value and a subgradient at point `x`. Wraps function
+`firstorderoracle`.
+"""
+function blackbox_oracle(pb, x)
+    return firstorderoracle(pb, x)[1:2]
+end
+
+
 include("simpleNSPb.jl")
 
 
@@ -139,7 +150,7 @@ export g, Dg, Dgconj
 export manifold_dim, manifold_codim
 
 export NonSmoothPb
-export F, ∂F_elt, is_differentiable, firstorderoracle
+export F, ∂F_elt, is_differentiable, firstorderoracle, blackbox_oracle
 
 export SimpleQuad, SmoothQuad, Simplel1
 export SmoothQuad1d, SmoothQuad2d_1, SmoothQuad2d_2
